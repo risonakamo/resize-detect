@@ -5,6 +5,7 @@ setup(
     version="1.0.0",
     packages=find_packages(),
     requires=[
-        "pillow"
+        "pillow",
+        "colored"
     ]
 )

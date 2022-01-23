@@ -2,9 +2,10 @@ from os import walk
 from os.path import getsize,join
 from pprint import pprint
 from PIL.Image import open as imgopen,Image
+from colored import stylize,fg
 
 from typing import List
-from resize_detect.types.types import DirReport
+from resize_detect.types.types import DirReport,DirReportStats
 
 # inputs
 TARGET_DIR:str=r"C:\Users\ktkm\Desktop\OGS"
@@ -47,8 +48,16 @@ def main()->None:
             ))
 
     dirReports=filterDirReports(dirReports)
+    totalReportsSize:float=0
 
-    pprint(dirReports)
+    print(stylize("directories with warnings:",fg("red")))
+    for x in dirReports:
+        x:DirReport
+
+        printDirReport(x)
+        totalReportsSize+=x["totalSize"]
+
+    print(f"size of all dirs: "+stylize(f"{totalReportsSize/1e6} mb",fg("yellow")))
 
 def reportImgs(
     dirpath:str,
@@ -114,6 +123,43 @@ def filterDirReports(reports:List[DirReport])->List[DirReport]:
     """filter list of dir reports to only those that have problems"""
 
     return [x for x in reports if dirReportWithError(x)]
+
+def printDirReport(report:DirReport)->None:
+    """print out dir report"""
+
+    print(stylize(f"> {report['path']}",fg("yellow")))
+
+    print(
+        f"    total size: "
+        +stylize(
+            f"{report['totalSize']/1e6} mb",
+            fg("yellow")
+        )
+    )
+
+    if report["totalSizeOver"]>0:
+        print(
+            f"    total size over: "
+            +stylize(
+                f"{report['totalSizeOver']/1e6} mb",
+                fg("red")
+            )
+        )
+
+    def overStatPrint(report:DirReport,statKey:DirReportStats,errorDescr:str)->None:
+        """if the report has an over error in a certain field, print out. should only be called on
+        report keys that are numeric and above 0 means that it should be printed out"""
+
+        if report[statKey]:
+            print(
+                f"    {errorDescr}: "
+                +stylize(f"{report[statKey]}/{report['totalImgs']}",fg("red"))
+            )
+
+    overStatPrint(report,"overSize","over size")
+    overStatPrint(report,"overRes","over resolution")
+    overStatPrint(report,"overBoth","over both")
+    print()
 
 if __name__=="__main__":
     main()
