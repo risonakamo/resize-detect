@@ -12,6 +12,10 @@ class DirReport(TypedDict):
 
     totalSizeOver:float
 
+    widestRes:str # resolution str
+    tallestRes:str
+    largestSize:float
+
 DirReportStats=Literal[
     "overSize",
     "overRes",

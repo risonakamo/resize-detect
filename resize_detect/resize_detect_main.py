@@ -75,6 +75,13 @@ def reportImgs(
 
     totalsize:float=0
 
+    largestSize:float=0
+    widestWidth:int=0
+    tallestHeight:int=0
+
+    widestImg:str="0x0"
+    tallestImg:str="0x0"
+
     for img in imgs:
         img:str
 
@@ -84,6 +91,8 @@ def reportImgs(
         imgsize:float=getsize(img)
         if getsize(img)>sizeLimit:
             oversize=True
+
+        largestSize=max(largestSize,imgsize)
 
         totalsize+=imgsize
 
@@ -100,6 +109,14 @@ def reportImgs(
         elif overres:
             totaloverres+=1
 
+        if openedImg.width>widestWidth:
+            widestWidth=openedImg.width
+            widestImg=getResString(openedImg)
+
+        if openedImg.height>tallestHeight:
+            tallestHeight=openedImg.height
+            tallestImg=getResString(openedImg)
+
     return {
         "path":dirpath,
 
@@ -110,7 +127,11 @@ def reportImgs(
         "overRes":totaloverres,
         "overBoth":totaloverboth,
 
-        "totalSizeOver":totalsize-totalSizeLimit
+        "totalSizeOver":totalsize-totalSizeLimit,
+
+        "widestRes":widestImg,
+        "tallestRes":tallestImg,
+        "largestSize":largestSize
     }
 
 def dirReportWithError(report:DirReport)->bool:
@@ -130,7 +151,7 @@ def printDirReport(report:DirReport)->None:
     print(stylize(f"> {report['path']}",fg("yellow")))
 
     print(
-        f"    total size: "
+        f"    - total size: "
         +stylize(
             f"{report['totalSize']/1e6} mb",
             fg("yellow")
@@ -139,7 +160,7 @@ def printDirReport(report:DirReport)->None:
 
     if report["totalSizeOver"]>0:
         print(
-            f"    total size over: "
+            f"    - total size over: "
             +stylize(
                 f"{report['totalSizeOver']/1e6} mb",
                 fg("red")
@@ -152,7 +173,7 @@ def printDirReport(report:DirReport)->None:
 
         if report[statKey]:
             print(
-                f"    {errorDescr}: "
+                f"    - {errorDescr}: "
                 +stylize(f"{report[statKey]}/{report['totalImgs']}",fg("red"))
             )
 
@@ -160,6 +181,11 @@ def printDirReport(report:DirReport)->None:
     overStatPrint(report,"overRes","over resolution")
     overStatPrint(report,"overBoth","over both")
     print()
+
+def getResString(img:Image)->str:
+    """get resolution string from image object"""
+
+    return f"{img.width}x{img.height}"
 
 if __name__=="__main__":
     main()
