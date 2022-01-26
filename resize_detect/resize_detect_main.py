@@ -79,8 +79,8 @@ def reportImgs(
     widestWidth:int=0
     tallestHeight:int=0
 
-    widestImg:str="0x0"
-    tallestImg:str="0x0"
+    widestImg:str=""
+    tallestImg:str=""
 
     for img in imgs:
         img:str
@@ -148,8 +148,17 @@ def filterDirReports(reports:List[DirReport])->List[DirReport]:
 def printDirReport(report:DirReport)->None:
     """print out dir report"""
 
-    print(stylize(f"> {report['path']}",fg("yellow")))
+    print(stylize(f"> {report['path']}",fg("light_cyan")))
 
+
+    # ---- report OVER stats ----
+    overStatPrint(report,"overSize","over size")
+    overStatPrint(report,"overRes","over resolution")
+    overStatPrint(report,"overBoth","over both")
+    print()
+
+
+    # ---- report total size stats ----
     print(
         f"    - total size: "
         +stylize(
@@ -166,10 +175,30 @@ def printDirReport(report:DirReport)->None:
                 fg("red")
             )
         )
+        print()
 
-    overStatPrint(report,"overSize","over size")
-    overStatPrint(report,"overRes","over resolution")
-    overStatPrint(report,"overBoth","over both")
+
+    # ---- report greatest single object value stats ----
+    if report["widestRes"]==report["tallestRes"]:
+        print(
+            "    - largest resolution: "
+            +stylize(f"{report['widestRes']}",fg("medium_violet_red"))
+        )
+
+    else:
+        print(
+            f"    - widest resolution: "
+            +stylize(f"{report['widestRes']}",fg("medium_violet_red"))
+        )
+        print(
+            f"    - tallest resolution: "
+            +stylize(f"{report['tallestRes']}",fg("medium_violet_red"))
+        )
+
+    print(
+        f"    - largest size: "
+        +stylize(f"{report['largestSize']/1e6} mb",fg("medium_violet_red"))
+    )
     print()
 
 def overStatPrint(report:DirReport,statKey:DirReportStats,errorDescr:str)->None:
