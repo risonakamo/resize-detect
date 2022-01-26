@@ -167,20 +167,20 @@ def printDirReport(report:DirReport)->None:
             )
         )
 
-    def overStatPrint(report:DirReport,statKey:DirReportStats,errorDescr:str)->None:
-        """if the report has an over error in a certain field, print out. should only be called on
-        report keys that are numeric and above 0 means that it should be printed out"""
-
-        if report[statKey]:
-            print(
-                f"    - {errorDescr}: "
-                +stylize(f"{report[statKey]}/{report['totalImgs']}",fg("red"))
-            )
-
     overStatPrint(report,"overSize","over size")
     overStatPrint(report,"overRes","over resolution")
     overStatPrint(report,"overBoth","over both")
     print()
+
+def overStatPrint(report:DirReport,statKey:DirReportStats,errorDescr:str)->None:
+    """if the report has an over error in a certain field, print out. should only be called on
+    report keys that are numeric and above 0 means that it should be printed out"""
+
+    if report[statKey]:
+        print(
+            f"    - {errorDescr}: "
+            +stylize(f"{report[statKey]}/{report['totalImgs']}",fg("red"))
+        )
 
 def getResString(img:Image)->str:
     """get resolution string from image object"""
